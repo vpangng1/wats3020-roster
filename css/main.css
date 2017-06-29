@@ -1,0 +1,58 @@
+/* Styles for WATS 3020 Roster Project */
+
+button {
+    background: royalblue;
+    padding: 0.2rem;
+    border: 1px rgba(255,255,255,0) solid;
+    color: #fff;
+    cursor: pointer;
+}
+button:hover, button:focus {
+    background: #fff;
+    padding: 0.2rem;
+    border: 1px royalblue solid;
+    color: royalblue;
+}
+table {
+    width: 100%;
+    text-align: left;
+}
+caption {
+    text-align: left;
+    background: #e8e8e8;
+    padding: 0.3rem;
+    visibility: hidden;
+    height: 0px;
+}
+td, th {
+    padding: 0.2rem;
+}
+tr:nth-child(even) {
+    background: #fff;
+}
+tr:nth-child(2n+1) {
+    background: #d7ebff;
+}
+thead tr th{
+    background: #fff;
+}
+h1.course-title {
+    margin-top: 0;
+}
+.course-description {
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+body {
+    background: #fff;
+    border-right: solid 1px #999;
+    border-left: solid 1px #999;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    width: 90%;
+    font-family: Helvetica, Arial, sans-serif;
+}
+html {
+    background: royalblue;
+    padding: 0;
+}
