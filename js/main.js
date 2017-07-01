@@ -67,7 +67,10 @@ class Course {
 
     // TODO: The FIRST step to create a functioning `markAttendance()` method is
     // to retreive the `Student` object out of the `this.students` Array. You
-    // can use the `this.findStudent()` method (provided above) to accomplish that goal.
+    // can use the `this.findStudent()` method (provided below) to accomplish
+    // that goal. Note that you will also have to handle two cases: The default
+    // behavior should be to mark the student present. The alternate behavior
+    // should be to mark the student absent.
 
     // TODO: Now that we have retrieved the specific `Student` object we want
     // to work with, we can use the appropriate method on the `Student` object
@@ -104,8 +107,9 @@ class Course {
 
 // TODO: Prompt the user for the  `courseDescription` (the descriptive summary of the course).
 
-// TODO: Create a new `Course` object instance called `myCourse` using the three data points you just collected from the user.
-
+// Create a new `Course` object instance called `myCourse` using the three data points just collected from the user.
+// TODO: Add in the values for the information supplied by the user above.
+let myCourse = new Course();
 
 
 ///////////////////////////////////////////////////
@@ -133,6 +137,7 @@ function updateRoster(course){
     let rosterTbody = document.querySelector('#roster tbody');
     // Clear Roster Content
     roster.Tbody.innerHTML = '';
+    // Populate Roster Content
     for (student of course.students){
         // Create a new row for the table.
         let newTR = document.createElement('tr');
@@ -150,8 +155,29 @@ function updateRoster(course){
         attendanceTD.innerHTML = student.calculateAttendance();
         newTR.appendChild(attendanceTD);
 
+        let actionsTD = document.createElement('td');
+        let presentButton = document.createElement('buton');
+        presentButton.setAttribute('data-username', student.username);
+        presentButton.setAttribute('class', 'present');
+        let absentButton = document.createElement('buton');
+        absentButton.setAttribute('data-username', student.username);
+        absentButton.setAttribute('class', 'absent');
+
         // Append the new row to the roster table.
         rosterTbody.appendChild(newTR);
+    }
+    // Set up the event listeners for buttons to mark attendance.
+    let presentButtons = document.querySelectorAll('.present');
+    for (button of presentButtons){
+        button.addEventListener('click', function(e){
+            myCourse.markAttendance(e.target.dataset.username);
+        });
+    }
+    let absentButtons = document.querySelectorAll('.absent');
+    for (button of absentButtons){
+        button.addEventListener('click', function(e){
+            myCourse.markAttendance(e.target.dataset.username, 'absent');
+        });
     }
 }
 
