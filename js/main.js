@@ -1,7 +1,5 @@
 /* JS for WATS 3020 Roster Project */
 
-let myCourse = null;
-
 ///////////////////////////////////////////////////
 //////// TODOs ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,6 +10,13 @@ let myCourse = null;
 // and `email` and makes those available as attributes. The `constructor()`
 // method should also break the username from before the `@` symbol in the
 // `email` value and use that to store on a `this.username` property.
+class Person {
+    constructor(name, email){
+        this.name = name;
+        this.email = email;
+        this.username = email.split('@')[0];
+    }
+}
 
 // TODO: Create another class that extends the `Person` class called `Student`.
 // The `Student` class should add a line to the `constructor()` method that sets
@@ -20,13 +25,20 @@ let myCourse = null;
 // use the `super()` command so you don't lose the functionality of the
 // `constructor()` method from the `Person` class.)
 //
+
+
 // TODO: Create another method on the `Student` class called `calculateAttendance`.
 // This method should give a percentage of how many days the student was present.
-// It should return a string like "90%" or "84.732%".
+// It should return a string like "90%" or "84.732%". Attendance should be
+// recorded into an Array using either a `0` for "absent" or a `1` for "present".
+// This should allow attendance percentage to be calculated as the average of
+// all the items in the `attendance` Array.
+
 
 // TODO: Create another class that extends the `Person` class called `Teacher`.
 // The `Teacher` class should add a property called `this.honorific` (supplied
 // when an instance of `Teacher` is created).
+
 
 // TODO: Set up our Course class so we can run the whole roster from it.
 class Course {
@@ -39,14 +51,6 @@ class Course {
     }
 
     /////////////////////////////////////////
-    // TODO: ADD the `setTeacher()` method /////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    //
-    // Create a method called `setTeacher()` that prompts the user for the
-    // information required to create a `Teacher` object (`name`, `email`) and
-    // does so, then sets the `this.teacher` property equal to the new `Teacher` object.
-
-    /////////////////////////////////////////
     // TODO: ADD the `addStudent()` method /////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     //
@@ -56,6 +60,16 @@ class Course {
     // to update the roster display by calling `updateRoster()`. You will need
     // to reference the Class instance using `this` as a parameter for
     // `updateRoster()`, so it might look like this: `updateRoster(this)`.
+
+
+    /////////////////////////////////////////
+    // TODO: ADD the `setTeacher()` method /////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Create a method called `setTeacher()` that prompts the user for the
+    // information required to create a `Teacher` object (`name`, `email`) and
+    // does so, then sets the `this.teacher` property equal to the new `Teacher` object.
+
 
     /////////////////////////////////////////
     // TODO: ADD `markAttendance()` method /////////////////////////////////////
@@ -77,8 +91,9 @@ class Course {
     // to record the attendance.
 
 
+
     //////////////////////////////////////////////
-    // Methods provided for you ////////////////////////////////////////////////
+    // Methods provided for you -- DO NOT EDIT /////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
     findStudent(username){
@@ -90,8 +105,6 @@ class Course {
         });
         return foundStudent;
     }
-
-
 }
 
 /////////////////////////////////////////
@@ -109,7 +122,6 @@ class Course {
 
 // Create a new `Course` object instance called `myCourse` using the three data points just collected from the user.
 // TODO: Add in the values for the information supplied by the user above.
-let myCourse = new Course();
 
 
 ///////////////////////////////////////////////////
@@ -126,17 +138,46 @@ rosterTitle.innerHTML = `${myCourse.code}: ${myCourse.title}`;
 let rosterDescription = document.querySelector('#course-description');
 rosterDescription.innerHTML = myCourse.description;
 
-let rosterTeacher = document.querySelector('#course-teacher');
-rosterTeacher.innerHTML = myCourse.teacher.name;
+if (myCourse.teacher){
+    let rosterTeacher = document.querySelector('#course-teacher');
+    rosterTeacher.innerHTML = `${myCourse.teacher.honorific} ${myCourse.teacher.name}`;
+} else {
+    let rosterTeacher = document.querySelector('#course-teacher');
+    rosterTeacher.innerHTML = "Not Set";
+}
 
 let rosterTbody = document.querySelector('#roster tbody');
 // Clear Roster Content
-roster.Tbody.innerHTML = '';
+rosterTbody.innerHTML = '';
+
+// Create event listener for adding a student.
+let addStudentButton = document.querySelector('#add-student');
+addStudentButton.addEventListener('click', function(e){
+    console.log('Calling addStudent() method.');
+    myCourse.addStudent();
+})
+
+// Create event listener for adding a teacher.
+let addTeacherButton = document.querySelector('#add-teacher');
+addTeacherButton.addEventListener('click', function(e){
+    console.log('Calling setTeacher() method.');
+    myCourse.setTeacher();
+})
+
+// Call Update Roster to initialize the content of the page.
+updateRoster(myCourse);
 
 function updateRoster(course){
     let rosterTbody = document.querySelector('#roster tbody');
     // Clear Roster Content
-    roster.Tbody.innerHTML = '';
+    rosterTbody.innerHTML = '';
+    if (course.teacher){
+        let rosterTeacher = document.querySelector('#course-teacher');
+        rosterTeacher.innerHTML = `${course.teacher.honorific} ${course.teacher.name}`;
+    } else {
+        let rosterTeacher = document.querySelector('#course-teacher');
+        rosterTeacher.innerHTML = "Not Set";
+    }
     // Populate Roster Content
     for (student of course.students){
         // Create a new row for the table.
@@ -156,40 +197,44 @@ function updateRoster(course){
         newTR.appendChild(attendanceTD);
 
         let actionsTD = document.createElement('td');
-        let presentButton = document.createElement('buton');
+        let presentButton = document.createElement('button');
+        presentButton.innerHTML = "Present";
         presentButton.setAttribute('data-username', student.username);
         presentButton.setAttribute('class', 'present');
-        let absentButton = document.createElement('buton');
+        actionsTD.appendChild(presentButton);
+
+        let absentButton = document.createElement('button');
+        absentButton.innerHTML = "Absent";
         absentButton.setAttribute('data-username', student.username);
         absentButton.setAttribute('class', 'absent');
+        actionsTD.appendChild(absentButton);
+
+        newTR.appendChild(actionsTD);
 
         // Append the new row to the roster table.
         rosterTbody.appendChild(newTR);
     }
+    // Call function to set event listeners on attendance buttons.
+    setupAttendanceButtons();
+}
+
+function setupAttendanceButtons(){
     // Set up the event listeners for buttons to mark attendance.
     let presentButtons = document.querySelectorAll('.present');
     for (button of presentButtons){
         button.addEventListener('click', function(e){
+            console.log(`Marking ${e.target.dataset.username} present.`);
             myCourse.markAttendance(e.target.dataset.username);
+            updateRoster(myCourse);
         });
     }
     let absentButtons = document.querySelectorAll('.absent');
     for (button of absentButtons){
         button.addEventListener('click', function(e){
+            console.log(`Marking ${e.target.dataset.username} absent.`);
             myCourse.markAttendance(e.target.dataset.username, 'absent');
+            updateRoster(myCourse);
         });
     }
 }
-
-let addStudentButton = document.querySelector('#add-student');
-addStudentButton.addEventListener('click', function(e){
-    console.log('Calling addStudent() method.');
-    myCourse.addStudent();
-})
-
-let addTeaherButton = document.querySelector('#add-teacher');
-addTeacherButton.addEventListener('click', function(e){
-    console.log('Calling setTeacher() method.');
-    myCourse.setTeacher();
-})
 
