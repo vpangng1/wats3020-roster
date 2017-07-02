@@ -10,13 +10,6 @@
 // and `email` and makes those available as attributes. The `constructor()`
 // method should also break the username from before the `@` symbol in the
 // `email` value and use that to store on a `this.username` property.
-class Person {
-    constructor(name, email){
-        this.name = name;
-        this.email = email;
-        this.username = email.split('@')[0];
-    }
-}
 
 // TODO: Create another class that extends the `Person` class called `Student`.
 // The `Student` class should add a line to the `constructor()` method that sets
